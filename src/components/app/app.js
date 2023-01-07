@@ -34,7 +34,7 @@ const data = [
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { data };
+    this.state = { data, term: '' };
   }
   
   handleDelete = (id) => {
@@ -56,35 +56,49 @@ class App extends React.Component {
     }))
   }
 
-  handleIncrease = (id) => {
+  handleChangeProp = (id, prop) => {
     this.setState(({ data }) => ({
-      data: data.map((item) => item.id === id ? {...item, increase: !item.increase} : item)
+      data: data.map((item) => item.id === id ? {...item, [prop]: !item[prop]} : item)
     }))
   }
 
-  handlePromo = (id) => {
-    this.setState(({ data }) => ({
-      data: data.map((item) => item.id === id ? {...item, promo: !item.promo} : item)
-    }))
+  updateSearch = (term) => {
+    this.setState({ term });
+  }
+
+  searchEmps = (items, term) => {
+    if (term.length === 0) return items;
+    return items.filter((item) => item.name.indexOf(term) > -1);
   }
 
   render() {
+    const { data, term } = this.state;
+    const employeesCount = data.length;
+    const increasedCount = data.filter((item) => item.increase).length;
+    const visibleData = this.searchEmps(data, term);
+    
     return (
       <div className="app">
-        <AppInfo data={this.state.data}/>
+        <AppInfo
+          increased={increasedCount}
+          employees={employeesCount}
+        />
   
         <div className="search-panel">
-          <SearchPanel/>
+          <SearchPanel
+            updateSearch={this.updateSearch}
+          />
           <AppFilter/>
         </div>
   
         <EmployeesList 
-          data={this.state.data}
+          data={visibleData}
           onDelete={this.handleDelete}
-          onIncrease={this.handleIncrease}
-          onPromo={this.handlePromo}
+          onChangeProp={this.handleChangeProp}
         />
-        <EmployeesAddForm onAdd={this.handleAdd}/>
+        <EmployeesAddForm
+          onAdd={this.handleAdd}
+        />
       </div>
     );
   }

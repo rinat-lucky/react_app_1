@@ -28,30 +28,34 @@ class EmployeesAddForm extends React.Component {
 
 	render() {
 		const { name, salary } = this.state;
+		let classes = "btn btn-outline-light";
+		if (!name || !salary) {
+			classes += " disabled";
+		} 
 
 		return (
 			<div className="app-add-form">
-				<h3>Добавьте нового сотрудника</h3>
+				<h3>Добавить нового сотрудника</h3>
 				<form
 					className="add-form d-flex"
 					onSubmit={this.handleAdd}
 				>
 					<input type="text"
 						className="form-control new-post-label"
-						placeholder="Как его зовут?"
+						placeholder="Введите имя"
 						name='name'
 						value={name}
 						onChange={this.handleChange}
 					/>
 					<input type="number"
 						className="form-control new-post-label"
-						placeholder="Зарплата в $?"
+						placeholder="Укажите зарплату в $"
 						name='salary'
 						value={salary}
 						onChange={this.handleChange}
 					/>
 					<button type="submit"
-						className="btn btn-outline-light">Добавить</button>
+						className={classes}>Добавить</button>
 				</form>
 			</div>
 		)
