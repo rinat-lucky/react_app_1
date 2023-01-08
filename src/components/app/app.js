@@ -34,16 +34,20 @@ const data = [
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { data, term: '' };
+    this.state = {
+      data,
+      term: '',
+      filter: 'all',
+    };
   }
   
-  handleDelete = (id) => {
+  onDelete = (id) => {
     this.setState(({ data }) => ({
       data: data.filter((item) => item.id !== id),
     }))
   }
 
-  handleAdd = ({ name, salary }) => {
+  onAdd = ({ name, salary }) => {
     const newItem = {
       name,
       salary,
@@ -56,14 +60,18 @@ class App extends React.Component {
     }))
   }
 
-  handleChangeProp = (id, prop) => {
+  onChangeProp = (id, prop) => {
     this.setState(({ data }) => ({
       data: data.map((item) => item.id === id ? {...item, [prop]: !item[prop]} : item)
     }))
   }
 
-  updateSearch = (term) => {
+  onUpdateSearch = (term) => {
     this.setState({ term });
+  }
+
+  onChangeFilter = (filter) => {
+    this.setState({ filter });
   }
 
   searchEmps = (items, term) => {
@@ -71,11 +79,24 @@ class App extends React.Component {
     return items.filter((item) => item.name.indexOf(term) > -1);
   }
 
+  filterEmps = (items, filter) => {
+    switch (filter) {
+      case 'promotion':
+        return items.filter((item) => item.promo);
+      case 'over1000':
+        return items.filter((item) => item.salary > 1000);
+      case 'all':
+        return items;
+      default:
+        throw new Error(`Unknown filter: ${filter}`);
+    }
+  }
+
   render() {
-    const { data, term } = this.state;
+    const { data, term, filter } = this.state;
     const employeesCount = data.length;
     const increasedCount = data.filter((item) => item.increase).length;
-    const visibleData = this.searchEmps(data, term);
+    const visibleData = this.filterEmps(this.searchEmps(data, term), filter);
     
     return (
       <div className="app">
@@ -86,18 +107,21 @@ class App extends React.Component {
   
         <div className="search-panel">
           <SearchPanel
-            updateSearch={this.updateSearch}
+            onUpdateSearch={this.onUpdateSearch}
           />
-          <AppFilter/>
+          <AppFilter
+            filter={filter}
+            onChangeFilter={this.onChangeFilter}            
+          />
         </div>
   
         <EmployeesList 
           data={visibleData}
-          onDelete={this.handleDelete}
-          onChangeProp={this.handleChangeProp}
+          onDelete={this.onDelete}
+          onChangeProp={this.onChangeProp}
         />
         <EmployeesAddForm
-          onAdd={this.handleAdd}
+          onAdd={this.onAdd}
         />
       </div>
     );

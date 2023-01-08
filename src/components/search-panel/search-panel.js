@@ -12,7 +12,7 @@ class SearchPanel extends React.Component {
     if (value !== ' ') {
       const term = value;
       this.setState({term});
-      this.props.updateSearch(term);
+      this.props.onUpdateSearch(term);
     }
   }
 
